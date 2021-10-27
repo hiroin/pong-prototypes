@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { MessageModule } from './message/message.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -10,6 +11,7 @@ import { MessageModule } from './message/message.module';
     TypeOrmModule.forRoot(),
     ServeStaticModule.forRoot({ rootPath: `${process.cwd()}/public` }),
     MessageModule,
+    UsersModule,
   ],
   controllers: [],
   providers: [],

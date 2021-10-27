@@ -1,4 +1,5 @@
-import { ConsoleLogger, Inject, Logger } from '@nestjs/common';
+import { ConsoleLogger, Inject, Logger, Req, UseGuards } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import {
   ConnectedSocket,
   MessageBody,
@@ -9,8 +10,7 @@ import {
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
-import { Socket } from 'dgram';
-import { Server } from 'socket.io';
+import { Server, Socket } from 'socket.io';
 import { Message } from './message.entity';
 import { MessageService } from './message.service';
 
@@ -49,10 +49,12 @@ export class MessageGateway
     this.logger.log(`MessageGateway Initialized`);
   }
 
+  @UseGuards(AuthGuard('jwt'))
   @SubscribeMessage('new-message-to-server')
   public async handleNewMessage(
-    @ConnectedSocket() client,
-    @MessageBody() data: { sender: string; message: string; room: number },
+    @ConnectedSocket() client: Socket,
+    @MessageBody()
+    data: { sender: string; message: string; room: number },
   ): Promise<void> {
     const message: Message = await this.messageService.createMessage(
       data.sender,
